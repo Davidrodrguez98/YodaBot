@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/chat', function () {
+Route::get('/', function () {
     return view('chat');
 });
 
