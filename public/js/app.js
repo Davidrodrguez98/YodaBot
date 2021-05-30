@@ -1921,68 +1921,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   data: function data() {
     return {
@@ -1992,99 +1930,125 @@ __webpack_require__.r(__webpack_exports__);
         msg: ""
       },
       msg: "",
-      isWriting: false
+      isWriting: false,
+      isNotFound: false,
+      keyWord: "force"
     };
   },
   methods: {
-    sendMessage: function sendMessage() {
+    messageSent: function messageSent() {
       if (this.msg != "") {
         this.messages.unshift({
           isBot: false,
           msg: this.msg
         });
         this.isWriting = true;
-        this.postMessageToBot(this.msg);
+        this.sendMessageToBot(this.msg);
         this.msg = "";
       }
     },
-    postMessageToBot: function postMessageToBot(message) {
+    sendMessageToBot: function sendMessageToBot(message) {
       var _this = this;
 
       var apiKey = "nyUl7wzXoKtgoHnd2fB0uRrAv0dDyLC+b4Y6xngpJDY=";
       var secret = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJwcm9qZWN0IjoieW9kYV9jaGF0Ym90X2VuIn0.anf_eerFhoNq6J8b36_qbD4VqngX79-yyBKWih_eA1-HyaMe2skiJXkRNpyWxpjmpySYWzPGncwvlwz5ZRE7eg";
-      console.log("postMessage");
       var accessToken = "";
       var chatbotApiUrl = "";
-      fetch("https://postman-echo.com/get", {
-        method: "GET",
-        headers: {}
+      var sessionToken = ""; // Get authorization
+
+      fetch("https://api.inbenta.io/v1/auth", {
+        method: "POST",
+        headers: {
+          "x-inbenta-key": apiKey,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          secret: secret
+        })
       }).then(function (response) {
-        console.log(response);
-        _this.isWriting = false;
-      })["catch"](function (err) {
-        console.error(err);
-      });
-      /*
-      const authRequest = {
-          async: true,
-          crossDomain: true,
-          url: "https://api.inbenta.io/v1/auth",
-          method: "post",
-          dataType: 'jsonp',
+        return response.json();
+      }).then(function (data) {
+        accessToken = data.accessToken;
+        console.log(accessToken); // Get Chatbot API URL
+
+        fetch("https://api.inbenta.io/v1/apis", {
+          method: "GET",
           headers: {
-              "x-inbenta-key": "nyUl7wzXoKtgoHnd2fB0uRrAv0dDyLC+b4Y6xngpJDY=",
-              "Content-Type": "application/json"
-          },
-          data: {
-              secret: "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJwcm9qZWN0IjoieW9kYV9jaGF0Ym90X2VuIn0.anf_eerFhoNq6J8b36_qbD4VqngX79-yyBKWih_eA1-HyaMe2skiJXkRNpyWxpjmpySYWzPGncwvlwz5ZRE7eg"
+            "x-inbenta-key": apiKey,
+            Authorization: "Bearer " + accessToken
           }
-      };
-       var promise = $.ajax(authRequest).done(function(response) {
-          console.log(response);
-          accessToken = response.accessToken;
-      });
-       promise.then(function() {
-          const chatRequest = {
-              async: true,
-              crossDomain: true,
-              url: "https://api.inbenta.io/v1/apis",
-              method: "GET",
-              dataType: 'jsonp',
+        }).then(function (response) {
+          return response.json();
+        }).then(function (data) {
+          chatbotApiUrl = data.apis.chatbot;
+          console.log(chatbotApiUrl); // Get session token
+
+          fetch(chatbotApiUrl + "/v1/conversation", {
+            method: "POST",
+            headers: {
+              "x-inbenta-key": apiKey,
+              Authorization: "Bearer " + accessToken
+            }
+          }).then(function (response) {
+            return response.json();
+          }).then(function (data) {
+            sessionToken = data.sessionToken;
+            console.log(sessionToken);
+            console.log("mensaje: " + message); // Get answers
+
+            fetch(chatbotApiUrl + "/v1/conversation/message", {
+              method: "POST",
               headers: {
-                  "x-inbenta-key": apiKey,
-                  "Authorization": "Bearer " + accessToken
-              }
-          };
-           $.ajax(chatRequest).done(function(response) {
-              console.log(response);
+                "x-inbenta-key": apiKey,
+                Authorization: "Bearer " + accessToken,
+                "x-inbenta-session": "Bearer " + sessionToken,
+                "Content-Type": "application/json"
+              },
+              body: JSON.stringify({
+                message: message
+              })
+            }).then(function (response) {
+              return response.json();
+            }).then(function (data) {
+              console.log(data);
+              data.answers.forEach(function (answer) {
+                if (message.includes(_this.keyWord)) {
+                  _this.isNotFound = false;
+
+                  _this.messages.unshift({
+                    isBot: true,
+                    msg: 'Contains force'
+                  });
+                } else {
+                  if (answer.flags.includes('no-results')) {
+                    if (!_this.isNotFound) {
+                      _this.isNotFound = true;
+
+                      _this.messages.unshift({
+                        isBot: true,
+                        msg: answer.message
+                      });
+                    } else {
+                      _this.messages.unshift({
+                        isBot: true,
+                        msg: 'Movies'
+                      });
+                    }
+                  } else {
+                    _this.isNotFound = false;
+
+                    _this.messages.unshift({
+                      isBot: true,
+                      msg: answer.message
+                    });
+                  }
+                }
+              });
+              _this.isWriting = false;
+            });
           });
+        });
       });
-       // const AuthHeaders = {
-      //     "x-inbenta-key": "nyUl7wzXoKtgoHnd2fB0uRrAv0dDyLC+b4Y6xngpJDY=",
-      //     "Content-Type": "application/json"
-      // };
-      // axios
-      //     .post(
-      //         "https://api.inbenta.io/v1/auth",
-      //         {},
-      //         {
-      //             headers: AuthHeaders
-      //         }
-      //     )
-      //     .then(res => {
-      //         console.log("Auth ");
-      //         console.log(res);
-      //         accessToken = res.accessToken;
-      //     })
-      //     .then(() => {
-      //         console.log("accessToken " + accessToken);
-      //         axios.get("https://api.inbenta.io/v1/apis").then(res => {
-      //             console.log("APIS");
-      //             console.log(res);
-      //             chatbotApiUrl = res.apis.chatbot;
-      //         });
-      //     });
-      */
     }
   }
 });
@@ -37903,7 +37867,7 @@ var render = function() {
                             on: {
                               click: function($event) {
                                 $event.preventDefault()
-                                return _vm.sendMessage($event)
+                                return _vm.messageSent($event)
                               }
                             }
                           },
