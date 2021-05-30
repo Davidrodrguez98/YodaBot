@@ -1917,6 +1917,72 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   data: function data() {
     return {
@@ -1942,27 +2008,83 @@ __webpack_require__.r(__webpack_exports__);
       }
     },
     postMessageToBot: function postMessageToBot(message) {
-      console.log('postMessage');
+      var _this = this;
+
+      var apiKey = "nyUl7wzXoKtgoHnd2fB0uRrAv0dDyLC+b4Y6xngpJDY=";
+      var secret = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJwcm9qZWN0IjoieW9kYV9jaGF0Ym90X2VuIn0.anf_eerFhoNq6J8b36_qbD4VqngX79-yyBKWih_eA1-HyaMe2skiJXkRNpyWxpjmpySYWzPGncwvlwz5ZRE7eg";
+      console.log("postMessage");
       var accessToken = "";
       var chatbotApiUrl = "";
-      var AuthHeaders = {
-        'x-inbenta-key': 'nyUl7wzXoKtgoHnd2fB0uRrAv0dDyLC+b4Y6xngpJDY=',
-        'Content-Type': 'application/json'
-      };
-      axios.post('https://api.inbenta.io/v1/auth', {}, {
-        headers: AuthHeaders
-      }).then(function (res) {
-        console.log('Auth ');
-        console.log(res);
-        accessToken = res.accessToken;
-      }).then(function () {
-        console.log('accessToken ' + accessToken);
-        axios.get('https://api.inbenta.io/v1/apis').then(function (res) {
-          console.log('APIS');
-          console.log(res);
-          chatbotApiUrl = res.apis.chatbot;
-        });
+      fetch("https://postman-echo.com/get", {
+        method: "GET",
+        headers: {}
+      }).then(function (response) {
+        console.log(response);
+        _this.isWriting = false;
+      })["catch"](function (err) {
+        console.error(err);
       });
+      /*
+      const authRequest = {
+          async: true,
+          crossDomain: true,
+          url: "https://api.inbenta.io/v1/auth",
+          method: "post",
+          dataType: 'jsonp',
+          headers: {
+              "x-inbenta-key": "nyUl7wzXoKtgoHnd2fB0uRrAv0dDyLC+b4Y6xngpJDY=",
+              "Content-Type": "application/json"
+          },
+          data: {
+              secret: "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJwcm9qZWN0IjoieW9kYV9jaGF0Ym90X2VuIn0.anf_eerFhoNq6J8b36_qbD4VqngX79-yyBKWih_eA1-HyaMe2skiJXkRNpyWxpjmpySYWzPGncwvlwz5ZRE7eg"
+          }
+      };
+       var promise = $.ajax(authRequest).done(function(response) {
+          console.log(response);
+          accessToken = response.accessToken;
+      });
+       promise.then(function() {
+          const chatRequest = {
+              async: true,
+              crossDomain: true,
+              url: "https://api.inbenta.io/v1/apis",
+              method: "GET",
+              dataType: 'jsonp',
+              headers: {
+                  "x-inbenta-key": apiKey,
+                  "Authorization": "Bearer " + accessToken
+              }
+          };
+           $.ajax(chatRequest).done(function(response) {
+              console.log(response);
+          });
+      });
+       // const AuthHeaders = {
+      //     "x-inbenta-key": "nyUl7wzXoKtgoHnd2fB0uRrAv0dDyLC+b4Y6xngpJDY=",
+      //     "Content-Type": "application/json"
+      // };
+      // axios
+      //     .post(
+      //         "https://api.inbenta.io/v1/auth",
+      //         {},
+      //         {
+      //             headers: AuthHeaders
+      //         }
+      //     )
+      //     .then(res => {
+      //         console.log("Auth ");
+      //         console.log(res);
+      //         accessToken = res.accessToken;
+      //     })
+      //     .then(() => {
+      //         console.log("accessToken " + accessToken);
+      //         axios.get("https://api.inbenta.io/v1/apis").then(res => {
+      //             console.log("APIS");
+      //             console.log(res);
+      //             chatbotApiUrl = res.apis.chatbot;
+      //         });
+      //     });
+      */
     }
   }
 });
@@ -37534,285 +37656,298 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", { staticClass: "flex h-screen antialiased text-gray-800" }, [
-    _c(
-      "div",
-      { staticClass: "flex flex-row h-full w-full overflow-x-hidden" },
-      [
-        _c(
-          "div",
-          {
-            staticClass: "flex flex-col flex-auto h-full p-10 xl:px-32 md:px-20"
-          },
-          [
-            _c(
-              "div",
-              {
-                staticClass:
-                  "flex flex-col flex-auto flex-shrink-0 rounded-2xl bg-blue-50 h-full shadow-lg"
-              },
-              [
-                _c(
-                  "div",
-                  {
-                    staticClass:
-                      "flex flex-row items-center h-16 w-auto bg-blue-200 w-full p-8 mb-2 rounded-t-xl border-b-2 border-gray-600"
-                  },
-                  [
-                    _c("div", { staticClass: "relative" }, [
-                      _c(
-                        "div",
-                        {
-                          staticClass:
-                            "flex items-center justify-center h-12 w-12 rounded-full flex-shrink-0 shadow-md bg-green-400 border-2 border-green-800"
-                        },
-                        [
-                          _c("img", {
-                            staticClass: "h-full w-full",
-                            attrs: { src: "/assets/img/yoda.png", alt: "" }
-                          })
-                        ]
-                      )
-                    ]),
-                    _vm._v(" "),
-                    _c("div", { staticClass: "ml-4" }, [
-                      _c(
-                        "p",
-                        { staticClass: "text-xl font-semibold text-gray-700" },
-                        [
-                          _vm._v(
-                            "\n                            Yoda Bot\n                        "
-                          )
-                        ]
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "p",
-                        {
-                          staticClass:
-                            "text-md font-normal text-gray-800 italic",
-                          class: this.isWriting ? "d-block" : "d-none"
-                        },
-                        [
-                          _vm._v(
-                            "\n                            writing...\n                        "
-                          )
-                        ]
-                      )
-                    ])
-                  ]
-                ),
-                _vm._v(" "),
-                _c(
-                  "div",
-                  { staticClass: "flex flex-col h-full overflow-x-auto mb-4" },
-                  [
-                    _c(
-                      "div",
-                      { staticClass: "flex flex-col h-full" },
-                      _vm._l(_vm.messages, function(message) {
-                        return _c(
+  return _c(
+    "div",
+    {
+      staticClass: "flex h-screen antialiased text-gray-800",
+      attrs: { id: "screenChat" }
+    },
+    [
+      _c(
+        "div",
+        { staticClass: "flex flex-row h-full w-full overflow-x-hidden" },
+        [
+          _c(
+            "div",
+            {
+              staticClass:
+                "flex flex-col flex-auto h-full p-10 xl:px-32 md:px-20"
+            },
+            [
+              _c(
+                "div",
+                {
+                  staticClass:
+                    "flex flex-col flex-auto flex-shrink-0 rounded-2xl bg-blue-50 h-full shadow-lg"
+                },
+                [
+                  _c(
+                    "div",
+                    {
+                      staticClass:
+                        "flex flex-row items-center h-16 w-auto bg-blue-200 w-full p-8 mb-2 rounded-t-xl border-b-2 border-gray-600"
+                    },
+                    [
+                      _c("div", { staticClass: "relative" }, [
+                        _c(
                           "div",
-                          { staticClass: "grid grid-cols-12 gap-y-2" },
+                          {
+                            staticClass:
+                              "flex items-center justify-center h-12 w-12 rounded-full flex-shrink-0 shadow-md bg-green-400 border-2 border-green-800"
+                          },
                           [
-                            message.isBot
-                              ? _c(
-                                  "div",
-                                  {
-                                    staticClass:
-                                      "col-start-1 col-end-8 p-3 rounded-lg"
-                                  },
-                                  [
-                                    _c(
-                                      "div",
-                                      {
-                                        staticClass:
-                                          "flex flex-row items-center"
-                                      },
-                                      [
-                                        _c(
-                                          "div",
-                                          {
-                                            staticClass:
-                                              "flex items-center justify-center h-10 w-10 rounded-full  bg-green-400 border-2 border-green-800 flex-shrink-0"
-                                          },
-                                          [
-                                            _c("img", {
-                                              staticClass: "h-full w-full",
-                                              attrs: {
-                                                src: "/assets/img/yoda.png",
-                                                alt: ""
-                                              }
-                                            })
-                                          ]
-                                        ),
-                                        _vm._v(" "),
-                                        _c(
-                                          "div",
-                                          {
-                                            staticClass:
-                                              "relative ml-3 text-sm bg-white py-2 px-4 shadow rounded-xl"
-                                          },
-                                          [
-                                            _c("div", [
-                                              _vm._v(_vm._s(message.msg))
-                                            ])
-                                          ]
-                                        )
-                                      ]
-                                    )
-                                  ]
-                                )
-                              : _c(
-                                  "div",
-                                  {
-                                    staticClass:
-                                      "col-start-6 col-end-13 p-3 rounded-lg"
-                                  },
-                                  [
-                                    _c(
-                                      "div",
-                                      {
-                                        staticClass:
-                                          "flex items-center justify-start flex-row-reverse"
-                                      },
-                                      [
-                                        _c(
-                                          "div",
-                                          {
-                                            staticClass:
-                                              "flex items-center justify-center h-10 w-10 rounded-full bg-indigo-500 flex-shrink-0 border-2 border-indigo-800"
-                                          },
-                                          [
-                                            _c("img", {
-                                              staticClass: "w-7 pl-1",
-                                              attrs: {
-                                                src:
-                                                  "/assets/img/programmer.png",
-                                                alt: ""
-                                              }
-                                            })
-                                          ]
-                                        ),
-                                        _vm._v(" "),
-                                        _c(
-                                          "div",
-                                          {
-                                            staticClass:
-                                              "relative mr-3 text-sm bg-green-100 py-2 px-4 shadow rounded-xl"
-                                          },
-                                          [
-                                            _c("div", [
-                                              _vm._v(
-                                                "\n                                            " +
-                                                  _vm._s(message.msg) +
-                                                  "\n                                        "
-                                              )
-                                            ])
-                                          ]
-                                        )
-                                      ]
-                                    )
-                                  ]
-                                )
+                            _c("img", {
+                              staticClass: "h-full w-full",
+                              attrs: { src: "/assets/img/yoda.png", alt: "" }
+                            })
                           ]
                         )
-                      }),
-                      0
-                    )
-                  ]
-                ),
-                _vm._v(" "),
-                _c(
-                  "form",
-                  {
-                    staticClass:
-                      "flex flex-row items-center h-16 md:h-20 rounded-b-xl bg-white w-full px-2 md:px-10 shadow"
-                  },
-                  [
-                    _c("div", { staticClass: "flex-grow" }, [
-                      _c("div", { staticClass: "relative w-full" }, [
-                        _c("input", {
-                          directives: [
-                            {
-                              name: "model",
-                              rawName: "v-model",
-                              value: _vm.msg,
-                              expression: "msg"
-                            }
-                          ],
-                          staticClass:
-                            "flex w-full border rounded-xl focus:outline-none focus:border-indigo-300 pl-4 h-10",
-                          attrs: {
-                            type: "text",
-                            placeholder: "Write a message..."
+                      ]),
+                      _vm._v(" "),
+                      _c("div", { staticClass: "ml-4" }, [
+                        _c(
+                          "p",
+                          {
+                            staticClass: "text-xl font-semibold text-gray-700"
                           },
-                          domProps: { value: _vm.msg },
-                          on: {
-                            input: function($event) {
-                              if ($event.target.composing) {
-                                return
-                              }
-                              _vm.msg = $event.target.value
-                            }
-                          }
-                        })
-                      ])
-                    ]),
-                    _vm._v(" "),
-                    _c("div", { staticClass: "ml-2 md_ml-4" }, [
-                      _c(
-                        "button",
-                        {
-                          staticClass:
-                            "flex items-center justify-center bg-indigo-500 hover:bg-indigo-600 rounded-xl text-white px-4 py-2 flex-shrink-0",
-                          on: {
-                            click: function($event) {
-                              $event.preventDefault()
-                              return _vm.sendMessage($event)
-                            }
-                          }
-                        },
-                        [
-                          _c("span", [_vm._v("Send")]),
-                          _vm._v(" "),
-                          _c("span", { staticClass: "ml-2" }, [
-                            _c(
-                              "svg",
-                              {
-                                staticClass:
-                                  "w-4 h-4 transform rotate-45 -mt-px",
-                                attrs: {
-                                  fill: "none",
-                                  stroke: "currentColor",
-                                  viewBox: "0 0 24 24",
-                                  xmlns: "http://www.w3.org/2000/svg"
-                                }
-                              },
-                              [
-                                _c("path", {
-                                  attrs: {
-                                    "stroke-linecap": "round",
-                                    "stroke-linejoin": "round",
-                                    "stroke-width": "2",
-                                    d: "M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
-                                  }
-                                })
-                              ]
+                          [
+                            _vm._v(
+                              "\n                            Yoda Bot\n                        "
                             )
-                          ])
-                        ]
+                          ]
+                        ),
+                        _vm._v(" "),
+                        _c(
+                          "p",
+                          {
+                            staticClass:
+                              "text-md font-normal text-gray-800 italic",
+                            class: this.isWriting ? "d-block" : "d-none"
+                          },
+                          [
+                            _vm._v(
+                              "\n                            writing...\n                        "
+                            )
+                          ]
+                        )
+                      ])
+                    ]
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "div",
+                    {
+                      staticClass: "flex flex-col h-full overflow-x-auto mb-4"
+                    },
+                    [
+                      _c(
+                        "div",
+                        { staticClass: "flex flex-col h-full" },
+                        _vm._l(_vm.messages, function(message) {
+                          return _c(
+                            "div",
+                            { staticClass: "grid grid-cols-12 gap-y-2" },
+                            [
+                              message.isBot
+                                ? _c(
+                                    "div",
+                                    {
+                                      staticClass:
+                                        "col-start-1 col-end-8 p-3 rounded-lg"
+                                    },
+                                    [
+                                      _c(
+                                        "div",
+                                        {
+                                          staticClass:
+                                            "flex flex-row items-center"
+                                        },
+                                        [
+                                          _c(
+                                            "div",
+                                            {
+                                              staticClass:
+                                                "flex items-center justify-center h-10 w-10 rounded-full  bg-green-400 border-2 border-green-800 flex-shrink-0"
+                                            },
+                                            [
+                                              _c("img", {
+                                                staticClass: "h-full w-full",
+                                                attrs: {
+                                                  src: "/assets/img/yoda.png",
+                                                  alt: ""
+                                                }
+                                              })
+                                            ]
+                                          ),
+                                          _vm._v(" "),
+                                          _c(
+                                            "div",
+                                            {
+                                              staticClass:
+                                                "relative ml-3 text-sm bg-white py-2 px-4 shadow rounded-xl"
+                                            },
+                                            [
+                                              _c("div", [
+                                                _vm._v(_vm._s(message.msg))
+                                              ])
+                                            ]
+                                          )
+                                        ]
+                                      )
+                                    ]
+                                  )
+                                : _c(
+                                    "div",
+                                    {
+                                      staticClass:
+                                        "col-start-6 col-end-13 p-3 rounded-lg"
+                                    },
+                                    [
+                                      _c(
+                                        "div",
+                                        {
+                                          staticClass:
+                                            "flex items-center justify-start flex-row-reverse"
+                                        },
+                                        [
+                                          _c(
+                                            "div",
+                                            {
+                                              staticClass:
+                                                "flex items-center justify-center h-10 w-10 rounded-full bg-indigo-500 flex-shrink-0 border-2 border-indigo-800"
+                                            },
+                                            [
+                                              _c("img", {
+                                                staticClass: "w-7 pl-1",
+                                                attrs: {
+                                                  src:
+                                                    "/assets/img/programmer.png",
+                                                  alt: ""
+                                                }
+                                              })
+                                            ]
+                                          ),
+                                          _vm._v(" "),
+                                          _c(
+                                            "div",
+                                            {
+                                              staticClass:
+                                                "relative mr-3 text-sm bg-green-100 py-2 px-4 shadow rounded-xl"
+                                            },
+                                            [
+                                              _c("div", [
+                                                _vm._v(
+                                                  "\n                                            " +
+                                                    _vm._s(message.msg) +
+                                                    "\n                                        "
+                                                )
+                                              ])
+                                            ]
+                                          )
+                                        ]
+                                      )
+                                    ]
+                                  )
+                            ]
+                          )
+                        }),
+                        0
                       )
-                    ])
-                  ]
-                )
-              ]
-            )
-          ]
-        )
-      ]
-    )
-  ])
+                    ]
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "form",
+                    {
+                      staticClass:
+                        "flex flex-row items-center h-16 md:h-20 rounded-b-xl bg-white w-full px-2 md:px-10 shadow"
+                    },
+                    [
+                      _c("div", { staticClass: "flex-grow" }, [
+                        _c("div", { staticClass: "relative w-full" }, [
+                          _c("input", {
+                            directives: [
+                              {
+                                name: "model",
+                                rawName: "v-model",
+                                value: _vm.msg,
+                                expression: "msg"
+                              }
+                            ],
+                            staticClass:
+                              "flex w-full border rounded-xl focus:outline-none focus:border-indigo-300 pl-4 h-10",
+                            attrs: {
+                              type: "text",
+                              id: "inputChat",
+                              placeholder: "Write a message..."
+                            },
+                            domProps: { value: _vm.msg },
+                            on: {
+                              input: function($event) {
+                                if ($event.target.composing) {
+                                  return
+                                }
+                                _vm.msg = $event.target.value
+                              }
+                            }
+                          })
+                        ])
+                      ]),
+                      _vm._v(" "),
+                      _c("div", { staticClass: "ml-2 md_ml-4" }, [
+                        _c(
+                          "button",
+                          {
+                            staticClass:
+                              "flex items-center justify-center bg-indigo-500 hover:bg-indigo-600 rounded-xl text-white px-4 py-2 flex-shrink-0",
+                            on: {
+                              click: function($event) {
+                                $event.preventDefault()
+                                return _vm.sendMessage($event)
+                              }
+                            }
+                          },
+                          [
+                            _c("span", [_vm._v("Send")]),
+                            _vm._v(" "),
+                            _c("span", { staticClass: "ml-2" }, [
+                              _c(
+                                "svg",
+                                {
+                                  staticClass:
+                                    "w-4 h-4 transform rotate-45 -mt-px",
+                                  attrs: {
+                                    fill: "none",
+                                    stroke: "currentColor",
+                                    viewBox: "0 0 24 24",
+                                    xmlns: "http://www.w3.org/2000/svg"
+                                  }
+                                },
+                                [
+                                  _c("path", {
+                                    attrs: {
+                                      "stroke-linecap": "round",
+                                      "stroke-linejoin": "round",
+                                      "stroke-width": "2",
+                                      d: "M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
+                                    }
+                                  })
+                                ]
+                              )
+                            ])
+                          ]
+                        )
+                      ])
+                    ]
+                  )
+                ]
+              )
+            ]
+          )
+        ]
+      )
+    ]
+  )
 }
 var staticRenderFns = []
 render._withStripped = true
