@@ -1969,7 +1969,7 @@ __webpack_require__.r(__webpack_exports__);
         return response.json();
       }).then(function (data) {
         accessToken = data.accessToken;
-        console.log(accessToken); // Get Chatbot API URL
+        console.log(data); // Get Chatbot API URL
 
         fetch("https://api.inbenta.io/v1/apis", {
           method: "GET",
@@ -1981,7 +1981,7 @@ __webpack_require__.r(__webpack_exports__);
           return response.json();
         }).then(function (data) {
           chatbotApiUrl = data.apis.chatbot;
-          console.log(chatbotApiUrl); // Get session token
+          console.log(data); // Get session token
 
           fetch(chatbotApiUrl + "/v1/conversation", {
             method: "POST",
@@ -1993,7 +1993,7 @@ __webpack_require__.r(__webpack_exports__);
             return response.json();
           }).then(function (data) {
             sessionToken = data.sessionToken;
-            console.log(sessionToken);
+            console.log(data);
             console.log("mensaje: " + message); // Get answers
 
             fetch(chatbotApiUrl + "/v1/conversation/message", {
@@ -2014,10 +2014,33 @@ __webpack_require__.r(__webpack_exports__);
               data.answers.forEach(function (answer) {
                 if (message.includes(_this.keyWord)) {
                   _this.isNotFound = false;
+                  fetch("https://inbenta-graphql-swapi-prod.herokuapp.com/api", {
+                    method: "POST",
+                    headers: {
+                      "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                      query: '{allFilms{films{title}}}'
+                    })
+                  }).then(function (response) {
+                    return response.json();
+                  }).then(function (data) {
+                    var json = JSON.parse(JSON.stringify(data.data.allFilms.films));
+                    var moviesMsg = "To watch these movies in order to improve your force you need: ";
+                    var firstOne = true;
+                    json.forEach(function (movie) {
+                      if (firstOne) {
+                        firstOne = false;
+                        moviesMsg += movie.title;
+                      } else {
+                        moviesMsg += ", " + movie.title;
+                      }
+                    });
 
-                  _this.messages.unshift({
-                    isBot: true,
-                    msg: 'Contains force'
+                    _this.messages.unshift({
+                      isBot: true,
+                      msg: moviesMsg
+                    });
                   });
                 } else {
                   if (answer.flags.includes('no-results')) {
@@ -2029,9 +2052,35 @@ __webpack_require__.r(__webpack_exports__);
                         msg: answer.message
                       });
                     } else {
-                      _this.messages.unshift({
-                        isBot: true,
-                        msg: 'Movies'
+                      fetch("https://inbenta-graphql-swapi-prod.herokuapp.com/api", {
+                        method: "POST",
+                        headers: {
+                          "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({
+                          query: '{allPeople(first: 5){people{name}}}'
+                        })
+                      }).then(function (response) {
+                        return response.json();
+                      }).then(function (data) {
+                        _this.isNotFound = false;
+                        console.log('Films: ' + JSON.stringify(data.data.allPeople.people));
+                        var json = JSON.parse(JSON.stringify(data.data.allPeople.people));
+                        var charactersMsg = "Ok, have a look at these mates, let us: ";
+                        var firstOne = true;
+                        json.forEach(function (person) {
+                          if (firstOne) {
+                            firstOne = false;
+                            charactersMsg += person.name;
+                          } else {
+                            charactersMsg += ", " + person.name;
+                          }
+                        });
+
+                        _this.messages.unshift({
+                          isBot: true,
+                          msg: charactersMsg
+                        });
                       });
                     }
                   } else {

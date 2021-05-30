@@ -125,7 +125,7 @@
                     .then(response => response.json())
                     .then(data => {
                         accessToken = data.accessToken;
-                        console.log(accessToken);
+                        console.log(data);
                         // Get Chatbot API URL
                         fetch("https://api.inbenta.io/v1/apis", {
                                 method: "GET",
@@ -137,7 +137,7 @@
                             .then(response => response.json())
                             .then(data => {
                                 chatbotApiUrl = data.apis.chatbot;
-                                console.log(chatbotApiUrl);
+                                console.log(data);
                                 // Get session token
                                 fetch(chatbotApiUrl + "/v1/conversation", {
                                         method: "POST",
@@ -149,7 +149,7 @@
                                     .then(response => response.json())
                                     .then(data => {
                                         sessionToken = data.sessionToken;
-                                        console.log(sessionToken);
+                                        console.log(data);
                                         console.log("mensaje: " + message);
                                         // Get answers
                                         fetch(
@@ -173,10 +173,32 @@
                                                 data.answers.forEach(answer => {
                                                     if (message.includes(this.keyWord)) {
                                                         this.isNotFound = false;
-                                                        this.messages.unshift({
-                                                            isBot: true,
-                                                            msg: 'Contains force'
-                                                        });
+                                                        fetch("https://inbenta-graphql-swapi-prod.herokuapp.com/api", {
+                                                                method: "POST",
+                                                                headers: {
+                                                                    "Content-Type": "application/json"
+                                                                },
+                                                                body: JSON.stringify({
+                                                                    query: '{allFilms{films{title}}}'
+                                                                })
+                                                            }).then(response => response.json())
+                                                            .then(data => {
+                                                                var json = JSON.parse(JSON.stringify(data.data.allFilms.films));
+                                                                var moviesMsg = "To watch these movies in order to improve your force you need: ";
+                                                                var firstOne = true;
+                                                                json.forEach(movie => {
+                                                                    if (firstOne) {
+                                                                        firstOne = false;
+                                                                        moviesMsg += movie.title;
+                                                                    } else {
+                                                                        moviesMsg += ", " + movie.title;
+                                                                    }
+                                                                });
+                                                                this.messages.unshift({
+                                                                    isBot: true,
+                                                                    msg: moviesMsg
+                                                                });
+                                                            })
                                                     } else {
                                                         if (answer.flags.includes('no-results')) {
                                                             if (!this.isNotFound) {
@@ -186,10 +208,35 @@
                                                                     msg: answer.message
                                                                 });
                                                             } else {
-                                                                this.messages.unshift({
-                                                                    isBot: true,
-                                                                    msg: 'Movies'
-                                                                });
+                                                                fetch("https://inbenta-graphql-swapi-prod.herokuapp.com/api", {
+                                                                        method: "POST",
+                                                                        headers: {
+                                                                            "Content-Type": "application/json"
+                                                                        },
+                                                                        body: JSON.stringify({
+                                                                            query: '{allPeople(first: 5){people{name}}}'
+                                                                        })
+                                                                    })
+                                                                    .then(response => response.json())
+                                                                    .then(data => {
+                                                                        this.isNotFound = false;
+                                                                        console.log('Films: ' + JSON.stringify(data.data.allPeople.people));
+                                                                        var json = JSON.parse(JSON.stringify(data.data.allPeople.people));
+                                                                        var charactersMsg = "Ok, have a look at these mates, let us: ";
+                                                                        var firstOne = true;
+                                                                        json.forEach(person => {
+                                                                            if (firstOne) {
+                                                                                firstOne = false;
+                                                                                charactersMsg += person.name;
+                                                                            } else {
+                                                                                charactersMsg += ", " + person.name;
+                                                                            }
+                                                                        });
+                                                                        this.messages.unshift({
+                                                                            isBot: true,
+                                                                            msg: charactersMsg
+                                                                        });
+                                                                    })
                                                             }
                                                         } else {
                                                             this.isNotFound = false;
