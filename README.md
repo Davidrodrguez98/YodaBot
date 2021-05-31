@@ -9,7 +9,7 @@
 
 ## About this project
 
-This is a Chat bot as a part of the Inbenta Challenge.
+This is a Chat bot as a part of the Inbenta Challenge. Demo link: http://infinite-eyrie-52438.herokuapp.com/
 
 ## About Laravel
 
