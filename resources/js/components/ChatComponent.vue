@@ -40,7 +40,6 @@
                                                     '/assets/img/programmer.png'
                                                 " class="w-7 pl-1" alt="" />
                                         </div>
-
                                         <div class="relative mr-3 text-sm bg-green-100 py-2 px-4 shadow rounded-xl">
                                             <div>
                                                 {{ message.msg }}
@@ -78,19 +77,65 @@
     export default {
         data() {
             return {
+                // The list of messages
                 messages: [],
-                messageObject: {
-                    isBot: false,
-                    msg: ""
-                },
+                // The input value
                 msg: "",
+                // A flag to hide or show the wirting text
                 isWriting: false,
+                // A flag to know if the last answer was a no-results answer
                 isNotFound: false,
+                // The key word to show the star wars films
                 keyWord: "force"
             };
         },
+        created() {
+            // Store in session cache the API Key
+            sessionStorage.setItem('yodabot-apiKey', "nyUl7wzXoKtgoHnd2fB0uRrAv0dDyLC+b4Y6xngpJDY=");
 
+            // Check if the token is expired
+            if (sessionStorage.getItem('yodabot-chatbotapiurl')) {
+                fetch(sessionStorage.getItem('yodabot-chatbotapiurl') + "/v1/conversation/history", {
+                        method: "GET",
+                        headers: {
+                            "x-inbenta-key": sessionStorage.getItem('yodabot-apiKey'),
+                            "Authorization": "Bearer " + sessionStorage.getItem('yodabot-accesstoken'),
+                            "x-inbenta-session": "Bearer " + sessionStorage.getItem('yodabot-sessionToken')
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        // If it is expired, then generate new tokens
+                        if(data.message == "User is not authorized to access this resource with an explicit deny"){
+                            this.saveTokens(true);
+                        }
+                    });
+            }
+        },
+        mounted() {
+            // Get the conversation history
+            if (sessionStorage.getItem('yodabot-chatbotapiurl')) {
+                fetch(sessionStorage.getItem('yodabot-chatbotapiurl') + "/v1/conversation/history", {
+                        method: "GET",
+                        headers: {
+                            "x-inbenta-key": sessionStorage.getItem('yodabot-apiKey'),
+                            "Authorization": "Bearer " + sessionStorage.getItem('yodabot-accesstoken'),
+                            "x-inbenta-session": "Bearer " + sessionStorage.getItem('yodabot-sessionToken')
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        data.forEach(msg => {
+                            this.messages.unshift({
+                                isBot: msg.user == "bot" ? true : false,
+                                msg: msg.message
+                            })
+                        });
+                    });
+            }
+        },
         methods: {
+            // When the button is clicked, the message is sent to the bot
             messageSent() {
                 if (this.msg != "") {
                     this.messages.unshift({
@@ -102,155 +147,191 @@
                     this.msg = "";
                 }
             },
-            sendMessageToBot(message) {
-                const apiKey = "nyUl7wzXoKtgoHnd2fB0uRrAv0dDyLC+b4Y6xngpJDY=";
+            // Get the API access token
+            async getAccesToken(apiKey, secret, refresh = false) {
+                var accessToken = "";
+                if (!sessionStorage.getItem('yodabot-accesstoken') || refresh) {
+                    await fetch("https://api.inbenta.io/v1/auth", {
+                            method: "POST",
+                            headers: {
+                                "x-inbenta-key": apiKey,
+                                "Content-Type": "application/json"
+                            },
+                            body: JSON.stringify({
+                                secret: secret
+                            })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            accessToken = JSON.parse(JSON.stringify(data.accessToken));
+                            sessionStorage.setItem('yodabot-accesstoken', accessToken);
+                        });
+                }
+            },
+            // Get the API Chatbot URL
+            async getChatBotApiUrl(apiKey, accessToken, refresh = false) {
+                var chatbotApiUrl = "";
+                if (!sessionStorage.getItem('yodabot-chatbotapiurl') || refresh) {
+                    // Get Chatbot API URL
+                    await fetch("https://api.inbenta.io/v1/apis", {
+                            method: "GET",
+                            headers: {
+                                "x-inbenta-key": apiKey,
+                                "Authorization": "Bearer " + accessToken
+                            }
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            chatbotApiUrl = data.apis.chatbot;
+                            sessionStorage.setItem('yodabot-chatbotapiurl', chatbotApiUrl);
+                        });
+                }
+            },
+            // Get the session token
+            async getSessionToken(apiKey, accessToken, chatbotApiUrl, refresh = false) {
+                var sessionToken = "";
+                if (!sessionStorage.getItem('yodabot-sessionToken') || refresh) {
+                    // Get session token
+                    await fetch(chatbotApiUrl + "/v1/conversation", {
+                            method: "POST",
+                            headers: {
+                                "x-inbenta-key": apiKey,
+                                "Authorization": "Bearer " + accessToken
+                            }
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            sessionToken = data.sessionToken;
+                            sessionStorage.setItem('yodabot-sessionToken', sessionToken);
+                        });
+                }
+            },
+            // Get tokens
+            async saveTokens(refresh = false) {
+                const apiKey = sessionStorage.getItem('yodabot-apiKey');
                 const secret =
                     "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJwcm9qZWN0IjoieW9kYV9jaGF0Ym90X2VuIn0.anf_eerFhoNq6J8b36_qbD4VqngX79-yyBKWih_eA1-HyaMe2skiJXkRNpyWxpjmpySYWzPGncwvlwz5ZRE7eg";
 
-                var accessToken = "";
-                var chatbotApiUrl = "";
-                var sessionToken = "";
+                await this.getAccesToken(apiKey, secret, refresh);
+                var accessToken = sessionStorage.getItem('yodabot-accesstoken');
+                await this.getChatBotApiUrl(apiKey, accessToken, refresh);
+                var chatbotApiUrl = sessionStorage.getItem('yodabot-chatbotapiurl');
+                await this.getSessionToken(apiKey, accessToken, chatbotApiUrl, refresh);
+                var sessionToken = sessionStorage.getItem('yodabot-sessionToken');
+            },
+            // Sending the message to the bot and attach the response at the conversation
+            async sendMessageToBot(message) {
+                const apiKey = sessionStorage.getItem('yodabot-apiKey');
 
-                // Get authorization
-                fetch("https://api.inbenta.io/v1/auth", {
+                await this.saveTokens();
+
+                // Loading tokens
+                var accessToken = sessionStorage.getItem('yodabot-accesstoken');
+                var chatbotApiUrl = sessionStorage.getItem('yodabot-chatbotapiurl');
+                var sessionToken = sessionStorage.getItem('yodabot-sessionToken');
+
+                // Sending the message to the bot
+                fetch(chatbotApiUrl + "/v1/conversation/message", {
                         method: "POST",
                         headers: {
                             "x-inbenta-key": apiKey,
+                            "Authorization": "Bearer " + accessToken,
+                            "x-inbenta-session": "Bearer " + sessionToken,
                             "Content-Type": "application/json"
                         },
                         body: JSON.stringify({
-                            secret: secret
+                            message: message
                         })
                     })
                     .then(response => response.json())
                     .then(data => {
-                        accessToken = data.accessToken;
-                        console.log(data);
-                        // Get Chatbot API URL
-                        fetch("https://api.inbenta.io/v1/apis", {
-                                method: "GET",
-                                headers: {
-                                    "x-inbenta-key": apiKey,
-                                    Authorization: "Bearer " + accessToken
-                                }
-                            })
-                            .then(response => response.json())
-                            .then(data => {
-                                chatbotApiUrl = data.apis.chatbot;
-                                console.log(data);
-                                // Get session token
-                                fetch(chatbotApiUrl + "/v1/conversation", {
+                        data.answers.forEach(answer => {
+                            // If the message contains the key word, get the films and display it at the conversation
+                            if (message.includes(this.keyWord)) {
+                                this.isNotFound = false;
+                                // Getting the films
+                                fetch("https://inbenta-graphql-swapi-prod.herokuapp.com/api", {
                                         method: "POST",
                                         headers: {
-                                            "x-inbenta-key": apiKey,
-                                            Authorization: "Bearer " + accessToken
-                                        }
-                                    })
-                                    .then(response => response.json())
+                                            "Content-Type": "application/json"
+                                        },
+                                        body: JSON.stringify({
+                                            query: '{allFilms{films{title}}}'
+                                        })
+                                    }).then(response => response.json())
                                     .then(data => {
-                                        sessionToken = data.sessionToken;
-                                        console.log(data);
-                                        console.log("mensaje: " + message);
-                                        // Get answers
-                                        fetch(
-                                                chatbotApiUrl +
-                                                "/v1/conversation/message", {
-                                                    method: "POST",
-                                                    headers: {
-                                                        "x-inbenta-key": apiKey,
-                                                        Authorization: "Bearer " + accessToken,
-                                                        "x-inbenta-session": "Bearer " + sessionToken,
-                                                        "Content-Type": "application/json"
-                                                    },
-                                                    body: JSON.stringify({
-                                                        message: message
-                                                    })
-                                                }
-                                            )
+                                        var json = JSON.parse(JSON.stringify(data.data.allFilms.films));
+                                        var moviesMsg = "To watch these movies in order to improve your force you need: ";
+                                        var firstOne = true;
+                                        json.forEach(movie => {
+                                            if (firstOne) {
+                                                firstOne = false;
+                                                moviesMsg += movie.title;
+                                            } else {
+                                                moviesMsg += ", " + movie.title;
+                                            }
+                                        });
+                                        // Attach the message at the conversation
+                                        this.messages.unshift({
+                                            isBot: true,
+                                            msg: moviesMsg
+                                        });
+                                    })
+                            } else {
+                                // If there is no answer to the query
+                                if (answer.flags.includes('no-results')) {
+                                    // If it is the first no-result response, attach the answer
+                                    if (!this.isNotFound) {
+                                        this.isNotFound = true;
+                                        this.messages.unshift({
+                                            isBot: true,
+                                            msg: answer.message
+                                        });
+                                    } else {
+                                        // If it is the second consecutive no-results answer, get the characters and attach them as a new answer
+                                        // Getting the characters
+                                        fetch("https://inbenta-graphql-swapi-prod.herokuapp.com/api", {
+                                                method: "POST",
+                                                headers: {
+                                                    "Content-Type": "application/json"
+                                                },
+                                                body: JSON.stringify({
+                                                    query: '{allPeople(first: 5){people{name}}}'
+                                                })
+                                            })
                                             .then(response => response.json())
                                             .then(data => {
-                                                console.log(data);
-                                                data.answers.forEach(answer => {
-                                                    if (message.includes(this.keyWord)) {
-                                                        this.isNotFound = false;
-                                                        fetch("https://inbenta-graphql-swapi-prod.herokuapp.com/api", {
-                                                                method: "POST",
-                                                                headers: {
-                                                                    "Content-Type": "application/json"
-                                                                },
-                                                                body: JSON.stringify({
-                                                                    query: '{allFilms{films{title}}}'
-                                                                })
-                                                            }).then(response => response.json())
-                                                            .then(data => {
-                                                                var json = JSON.parse(JSON.stringify(data.data.allFilms.films));
-                                                                var moviesMsg = "To watch these movies in order to improve your force you need: ";
-                                                                var firstOne = true;
-                                                                json.forEach(movie => {
-                                                                    if (firstOne) {
-                                                                        firstOne = false;
-                                                                        moviesMsg += movie.title;
-                                                                    } else {
-                                                                        moviesMsg += ", " + movie.title;
-                                                                    }
-                                                                });
-                                                                this.messages.unshift({
-                                                                    isBot: true,
-                                                                    msg: moviesMsg
-                                                                });
-                                                            })
+                                                this.isNotFound = false;
+                                                var json = JSON.parse(JSON.stringify(data.data.allPeople.people));
+                                                var charactersMsg = "Ok, have a look at these mates, let us: ";
+                                                var firstOne = true;
+                                                json.forEach(person => {
+                                                    if (firstOne) {
+                                                        firstOne = false;
+                                                        charactersMsg += person.name;
                                                     } else {
-                                                        if (answer.flags.includes('no-results')) {
-                                                            if (!this.isNotFound) {
-                                                                this.isNotFound = true;
-                                                                this.messages.unshift({
-                                                                    isBot: true,
-                                                                    msg: answer.message
-                                                                });
-                                                            } else {
-                                                                fetch("https://inbenta-graphql-swapi-prod.herokuapp.com/api", {
-                                                                        method: "POST",
-                                                                        headers: {
-                                                                            "Content-Type": "application/json"
-                                                                        },
-                                                                        body: JSON.stringify({
-                                                                            query: '{allPeople(first: 5){people{name}}}'
-                                                                        })
-                                                                    })
-                                                                    .then(response => response.json())
-                                                                    .then(data => {
-                                                                        this.isNotFound = false;
-                                                                        console.log('Films: ' + JSON.stringify(data.data.allPeople.people));
-                                                                        var json = JSON.parse(JSON.stringify(data.data.allPeople.people));
-                                                                        var charactersMsg = "Ok, have a look at these mates, let us: ";
-                                                                        var firstOne = true;
-                                                                        json.forEach(person => {
-                                                                            if (firstOne) {
-                                                                                firstOne = false;
-                                                                                charactersMsg += person.name;
-                                                                            } else {
-                                                                                charactersMsg += ", " + person.name;
-                                                                            }
-                                                                        });
-                                                                        this.messages.unshift({
-                                                                            isBot: true,
-                                                                            msg: charactersMsg
-                                                                        });
-                                                                    })
-                                                            }
-                                                        } else {
-                                                            this.isNotFound = false;
-                                                            this.messages.unshift({
-                                                                isBot: true,
-                                                                msg: answer.message
-                                                            });
-                                                        }
+                                                        charactersMsg += ", " + person.name;
                                                     }
-                                                })
-                                                this.isWriting = false;
-                                            });
+                                                });
+                                                // Attach the message
+                                                this.messages.unshift({
+                                                    isBot: true,
+                                                    msg: charactersMsg
+                                                });
+                                            })
+                                    }
+                                } else {
+                                    // If the bot is able to find out an answer to the query
+                                    this.isNotFound = false;
+                                    this.messages.unshift({
+                                        isBot: true,
+                                        msg: answer.message
                                     });
-                            });
+                                }
+                            }
+                        });
+                        // Hide the writing text
+                        this.isWriting = false;
                     });
             }
         }

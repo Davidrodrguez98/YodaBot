@@ -7,15 +7,12 @@ use Illuminate\Support\Facades\Http;
 
 class HomeController extends Controller
 {
+    private $accessToken = "";
     /**
      * Create a new controller instance.
      *
      * @return void
      */
-    // public function __construct()
-    // {
-    //     $this->middleware('auth');
-    // }
 
     /**
      * Show the application dashboard.
@@ -25,5 +22,10 @@ class HomeController extends Controller
     public function index()
     {
         return view('home');
+    }
+
+    public function chat()
+    {
+        return view('chat');
     }
 }
